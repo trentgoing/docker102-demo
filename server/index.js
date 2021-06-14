@@ -22,7 +22,7 @@ app.get("/db",
         res.status(500).send(err);
       }
       dbClient.end()
-      res.send(result);
+      res.json(result).send();
     });
   });
 
@@ -31,7 +31,7 @@ app.get("/cache",
     try{
       redisClient.set("rand000000000000", "OK");
       client.get("foo_rand000000000000", function(err, reply) {
-        res.send(reply.toString()); // Will print `OK`
+        res.json(reply.toString()).send(); // Will print `OK`
       });
     } catch (err) {
       res.status(500).send(err);
