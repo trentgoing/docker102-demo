@@ -6,22 +6,22 @@ const redisClient = require("redis").createClient("redis://redis-session-storage
 
 const { Client } = require('pg')
 const dbClient = new Client({
-  host : process.env.DB_HOST ? process.env.DB_HOST : "my-app-db",
-  port : process.env.DB_PORT ? process.env.DB_PORT : 5432,
-  user : process.env.DB_USER ? process.env.DB_USER: "root",
-  password : process.env.DB_PASSWORD ? process.env.DB_PASSWORD : "",
-  database : process.env.NODE_ENV !== "test" ? process.env.DB_DATABASE : "test"
+  host :  "my-app-db",
+  port : 5432,
+  database : "test",
+  user : "hackreactor",
+  password : "password",
 });
+dbClient.connect()
 
 app.get("/db",
   function(req, res) {
-    let options = {};
-    dbClient.connect()
     dbClient.query('SELECT NOW()', (err, result) => {
       if (err) {
         res.status(500).send(err);
+        dbClient.end();
       }
-      dbClient.end()
+      // dbClient.end()
       res.json(result).send();
     });
   });
@@ -30,10 +30,11 @@ app.get("/cache",
   function(req, res) {
     try{
       redisClient.set("rand000000000000", "OK");
-      client.get("foo_rand000000000000", function(err, reply) {
+      redisClient.get("rand000000000000", function(err, reply) {
         res.json(reply.toString()).send(); // Will print `OK`
       });
     } catch (err) {
+      console.log(err)
       res.status(500).send(err);
     }
   });
